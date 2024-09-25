@@ -1,5 +1,7 @@
 import os
 
+# Idea: getting rid of the empty lines in the dataset? 
+
 # Using the lovecraft stories dataset
 dataset_path = 'dataset'
 text = ''
