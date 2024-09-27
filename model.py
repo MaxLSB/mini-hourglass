@@ -16,7 +16,7 @@ class AttentionHead(torch.nn.Module):
 
     def forward(self, x):
 
-        B,T,C = x.shape
+        T = x.size(1) # the length of the sequence
         key = self.k(x) # the key of the attention mechanism
         query = self.q(x) # the query of the attention mechanism
         value = self.v(x) # the value of the attention mechanism

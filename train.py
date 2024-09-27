@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from model import LanguageModel
 import time
+import tqdm
 
 ###############################################################
 
@@ -73,7 +74,7 @@ print(f'Number of chracters in the training dataset: {len(train)}')
 starting_time = time.time()
 
 # training loop
-for epoch in range(epochs):
+for epoch in tqdm(range(epochs)):
     model.train()
     iter_count = 0
     for x, y in train_loader:
@@ -99,6 +100,3 @@ end_time = time.time()
 print(f'Training time: {end_time - starting_time} seconds')
 
 torch.save(model.state_dict(), 'model/model.pth')
-
-context = torch.zeros((1, 1), dtype=torch.long, device=device)
-print(decoder(model.generate(context, n_tokens=1000)[0].tolist()))

@@ -43,4 +43,8 @@ context = torch.tensor(encoder(context), dtype=torch.long, device=device).unsque
 print('Generated text: ', end='')
 model.generate(context, n_tokens=1000, decoder=decoder)
 
+# context = torch.zeros((1, 1), dtype=torch.long, device=device)
+# print('Generated text: ', end='')
+# model.generate(context, n_tokens=100, decoder=decoder)
+
 
