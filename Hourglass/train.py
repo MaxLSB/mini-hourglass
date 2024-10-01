@@ -2,15 +2,19 @@ import torch
 import time
 import tqdm
 from torch.utils.data import Dataset, DataLoader
-from model import LanguageModel
+from model import HourglassLM
 
 ###############################################################
+# Training file of the Hourglass model for language modeling
+###############################################################
 
+# Factors for the hourglass blocks, each factor is a list of two integers [n_layers, factor].
+# The first k factor is always 1 no matter what, otherwise the length of the output doesn't match the input.
+factors = [[2, 1], [1, 3]] # Total number of layers in the model is 2 + 1 + 2 = 5 (like an hourglass).
 batch_size = 64
 block_size = 256
-epochs = 30
+epochs = 2
 learning_rate = 3e-4
-n_blocks=6
 n_heads=6
 n_embedding=384
 
@@ -21,20 +25,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 with open('lovecraft-stories.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
-# with open('model_assets/vocab.txt', 'r') as f:
-#     chars = f.read().splitlines()  # Load vocabulary into a list
-
 chars = sorted(list(set(text)))
 vocab_size = len(chars)
 
-char_to_idx = {char: idx for idx, char in enumerate(chars)} # character to index mapping
-idx_to_char = {idx: char for idx, char in enumerate(chars)} # index to character mapping
+char_to_idx = {ch: i for i, ch in enumerate(chars)} # character to index mapping
+idx_to_char = {i: ch for i, ch in enumerate(chars)} # index to character mapping
 
 def encoder(text):
-    return [char_to_idx[char] for char in text]
+    return [char_to_idx[ch] for ch in text]
 
 def decoder(text):
-    return ''.join([idx_to_char[idx] for idx in text])  
+    return ''.join([idx_to_char[i] for i in text])  
 
 class TextDataset(Dataset):
     def __init__(self, data, block_size):
@@ -63,14 +64,14 @@ val_data = TextDataset(val, block_size)
 train_loader = DataLoader(train_data, batch_size, shuffle=True)
 test_loader = DataLoader(val_data, batch_size, shuffle=False)
 
-model = LanguageModel(n_blocks=n_blocks, vocab_size=vocab_size, n_heads=n_heads, n_embedding=n_embedding, block_size=block_size, device=device).to(device)
+model = HourglassLM(vocab_size=vocab_size, n_heads=n_heads, n_embedding=n_embedding, block_size=block_size, factors=factors).to(device)
 
-optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate) # Add weight decay ?
 loss_fn = torch.nn.CrossEntropyLoss()
 
 print(f'Parameters: {sum(parameter.numel() for parameter in model.parameters()) / 1e6:.2f}M')
-print(f'Vocab_size: {vocab_size}, Block_size: {block_size}, Batch_size: {batch_size}, N_blocks: {n_blocks}, N_heads: {n_heads}, N_embedding: {n_embedding}')
-print(f'Number of characters in the training dataset: {len(train)}')
+print(f'Vocab_size: {vocab_size}, Block_size: {block_size}, Batch_size: {batch_size}, N_heads: {n_heads}, N_embedding: {n_embedding}')
+print(f'Number of chracters in the training dataset: {len(train)}')
 
 starting_time = time.time()
 
@@ -100,4 +101,4 @@ for epoch in range(epochs):
 end_time = time.time()
 print(f'Training time: {end_time - starting_time} seconds')
 
-torch.save(model.state_dict(), 'model/model.pth')
+torch.save(model.state_dict(), 'model_assets/hourglass.pth')

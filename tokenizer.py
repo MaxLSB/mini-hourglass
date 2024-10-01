@@ -9,6 +9,6 @@ vocab_size = len(chars)
 # save the vocabulary to a file
 vocab_file = 'model_assets/vocab.txt'
 
-with open(vocab_file, 'w') as f:
+with open(vocab_file, 'w', encoding='utf-8') as f:
     for char in chars:
         f.write(char + '\n')
