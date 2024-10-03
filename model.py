@@ -2,6 +2,10 @@ from typing import List
 import torch
 import math
 
+####################################################################################################
+
+# Components of the Transformer
+
 
 class AttentionHead(torch.nn.Module):
     def __init__(self, head_size, n_embedding, block_size, dropout):
@@ -13,7 +17,6 @@ class AttentionHead(torch.nn.Module):
         self.q = torch.nn.Linear(n_embedding, head_size, bias=False)
         self.k = torch.nn.Linear(n_embedding, head_size, bias=False)
         self.v = torch.nn.Linear(n_embedding, head_size, bias=False)
-        # dropout layer, same value as in the paper
         self.dropout = torch.nn.Dropout(self.dropout)
         # Lower triangular matrix to mask the future tokens
         self.register_buffer('tril', torch.tril(
@@ -21,10 +24,10 @@ class AttentionHead(torch.nn.Module):
 
     def forward(self, x):
 
-        T = x.size(1)  # the length of the sequence
-        key = self.k(x)  # the key of the attention mechanism
-        query = self.q(x)  # the query of the attention mechanism
-        value = self.v(x)  # the value of the attention mechanism
+        T = x.size(1)  # length of the sequence
+        key = self.k(x)  # key of the attention mechanism
+        query = self.q(x)  # query of the attention mechanism
+        value = self.v(x)  # value of the attention mechanism
 
         output = torch.matmul(query, key.transpose(-2, -1)
                               ) / math.sqrt(self.head_size)
@@ -107,13 +110,17 @@ class PositionalEncoding(torch.nn.Module):
         positions = torch.arange(seq_len, device=x.device)
         return self.pe(positions).unsqueeze(0)
 
+####################################################################################################
+
+# Hourglass: Hierarchical Transformer
+
 
 class Hourglass(torch.nn.Module):
     """Hourglass Reccursive Block
     """
     # Add dropout as a parameter
 
-    def __init__(self, vocab_size, n_heads, n_embedding, block_size, dropout, factors: List[List[int]]):
+    def __init__(self, vocab_size, n_heads, n_embedding, block_size, dropout, factors: List[int]):
         super(Hourglass, self).__init__()
         self.n_heads = n_heads
         self.n_embedding = n_embedding
@@ -121,22 +128,22 @@ class Hourglass(torch.nn.Module):
         self.vocab_size = vocab_size
         self.dropout = dropout
         self.factors = factors
-        self.n_layers = factors[0][0]  # Number of layers in the block
+        self.n_layers = factors[0]  # Number of layers in the current Hourglass
 
         # Pre-Vanilla Transformer Decoder layers
         self.pre_layer = torch.nn.ModuleList([TransformerLayer(
             self.n_heads, self.n_embedding, self.block_size, self.dropout) for _ in range(self.n_layers)])
 
-        if len(self.factors) == 1:
-            # We are at the last layer
+        if len(self.factors) == 2:
+            # We are at the last layer, so the last pair of elements in the factors list
             self.hourglass = None
         else:
-            self.k = factors[1][1]  # Factor for the linear pooling
+            self.k = factors[2]  # Factor for the linear pooling
             self.linearProjection = torch.nn.Linear(
                 self.k * self.n_embedding, self.n_embedding)  # For Linear Pooling
             # We go to the next tuple in the hierarchy
             self.hourglass = Hourglass(
-                self.vocab_size, self.n_heads, self.n_embedding, self.block_size, self.dropout, self.factors[1:])
+                self.vocab_size, self.n_heads, self.n_embedding, self.block_size, self.dropout, self.factors[2:])
             # Post-Vanilla Transformer Decoder layers
             self.post_layer = torch.nn.ModuleList([TransformerLayer(
                 self.n_heads, self.n_embedding, self.block_size, self.dropout) for _ in range(self.n_layers)])
@@ -146,7 +153,7 @@ class Hourglass(torch.nn.Module):
         for i in range(self.n_layers):
             x = self.pre_layer[i](x)  # Pre-Vanilla Transformer Layer
         if self.hourglass is not None:
-            # Shift the sequence to the right by k-1 positions
+            # Shift the sequence to the right by k-1 positions so that the information does not leak
             x_hourglass = self.shiftRight(x)
             x_hourglass = self.linearPooling(x_hourglass)
             x_hourglass = self.hourglass(x_hourglass)
@@ -170,7 +177,6 @@ class Hourglass(torch.nn.Module):
 
     def linearPooling(self, x):
         """Shortening (Downsampling) the sequence length by a factor of k
-        - Add padding if T is not divisible by k ?
         """
         if x.size(1) % self.k != 0:  # Padding if T is not divisible by k
             # Number of elements to pad
@@ -194,7 +200,7 @@ class HourglassLM(torch.nn.Module):
     Note: Add dropout as a parameter ?
     """
 
-    def __init__(self, vocab_size, n_heads, n_embedding, block_size, dropout, factors: List[List[int]]):
+    def __init__(self, vocab_size, n_heads, n_embedding, block_size, dropout, factors: List[int]):
         super(HourglassLM, self).__init__()
         self.n_heads = n_heads
         self.n_embedding = n_embedding
@@ -227,8 +233,8 @@ class HourglassLM(torch.nn.Module):
 
         return logits  # We return the output of the model
 
-    def generate(self, x, max_tokens, decoder, idx_to_char):
-        """Generate a text of n_tokens given a prompt x
+    def generate(self, x, max_tokens, decode_text, idx_to_char):
+        """Generate a text of max_tokens given a prompt
         """
         for _ in range(max_tokens):
             # crop the context to the block size
@@ -242,7 +248,7 @@ class HourglassLM(torch.nn.Module):
 
             # We print the predicted token
             token_id = next_token.item()
-            print(decoder([token_id], idx_to_char), end='', flush=True)
+            print(decode_text([token_id], idx_to_char), end='', flush=True)
 
             # (B, T+1), we add the new token to the context
             x = torch.cat((x, next_token), dim=1)

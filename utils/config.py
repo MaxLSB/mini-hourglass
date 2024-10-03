@@ -1,5 +1,4 @@
 import torch
-from typing import List
 import argparse
 
 
@@ -12,10 +11,11 @@ def get_parser():
 
     parser.add_argument(
         "--factors",
-        type=List[List[int]],
-        default=[[2, 1], [4, 4]],
+        nargs='+',
+        type=int,
+        default=[2, 1, 8, 3],
         help="""
-        List of Tuples defining the number of layers and the shortening factor for each block ofs the model.
+        List of Tuples defining the number of layers and the shortening factor for each block ofs the model. Example: 2 1 4 4
         """
     )
 
@@ -36,7 +36,7 @@ def get_parser():
     parser.add_argument(
         "--n_heads",
         type=int,
-        default=6,
+        default=8,
         help="Number of attention heads."
     )
 
@@ -65,7 +65,7 @@ def get_parser():
     parser.add_argument(
         "--learning_rate",
         type=float,
-        default=3e-4,
+        default=4e-4,
         help="Learning rate for training."
     )
 
@@ -95,14 +95,14 @@ def get_parser():
     parser.add_argument(
         "--data_path",
         type=str,
-        default='lovecraft-stories.txt',
+        default='dataset/lovecraft-stories.txt',
         help="Path to the data file."
     )
 
     parser.add_argument(
         "--model_save_path",
         type=str,
-        default='model_assets/hourglass.pth',
+        default='trained_models/hourglass-model.pth',
         help="Path to save the model."
     )
 

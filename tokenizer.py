@@ -1,3 +1,5 @@
+# Useless file ?
+
 def main():
     # Making and saving the vocabulary for the model
     with open('lovecraft-stories.txt', 'r', encoding='utf-8') as f:

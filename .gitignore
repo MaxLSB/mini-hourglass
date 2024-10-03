@@ -1,2 +1,5 @@
-dataset/
+dataset_no_git/
 model_assets/
+backup/
+trained_models/
+finetune.py
