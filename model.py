@@ -222,7 +222,6 @@ class HourglassLM(torch.nn.Module):
             self.vocab_size, self.n_heads, self.n_embedding, self.block_size, self.dropout, self.factors)
 
     def forward(self, x):
-        # Problem car cela initialise les embeddings a chaque itération
         x = self.tokens_embedding(x) + self.position_embedding(x)
 
         # We pass the input through the hourglass reccursive block
