@@ -1,12 +1,12 @@
-# nlp-project
+# Hourglass: Auto-Regressive Hierarchical Transformer Language Model (at character level)
 
 _Still working on it..._
 
 ## Introduction
 
-Implemented the Hourglass Language Model from scratch, which is a character-level Hierarchical Transformer Language Model. This auto-regressive transformer uses a U-Net-like structure, which enables it to handle longer sequences more effectively. 
+Implemented the Hourglass Language Model from scratch, which is a Hierarchical Transformer Language Model. This auto-regressive transformer uses a U-Net-like structure, which enables it to handle longer sequences more effectively. 
 
-I built the entire pre-training, fine-tuning, and inference processes. The goal of this project was to gain a detailed understanding of the functioning of autoregressive transformer models through a hands-on approach and an implementation of a very interesting paper.
+My model works at a *character-level* (easier to train compared to words/sub-words). I built the entire pre-training, fine-tuning, and inference processes. The goal of this project was to gain a detailed understanding of the functioning of autoregressive transformer models through a hands-on approach and an implementation of a very interesting paper.
 
 The [paper](https://arxiv.org/abs/2110.13711) of reference. 
 
