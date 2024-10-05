@@ -138,7 +138,7 @@ class Hourglass(torch.nn.Module):
             # We are at the last layer, so the last pair of elements in the factors list
             self.hourglass = None
         else:
-            self.k = factors[2]  # Factor for the linear pooling
+            self.k = factors[3]  # Factor for the linear pooling
             self.linearProjection = torch.nn.Linear(
                 self.k * self.n_embedding, self.n_embedding)  # For Linear Pooling
             # We go to the next tuple in the hierarchy
@@ -233,8 +233,9 @@ class HourglassLM(torch.nn.Module):
 
         return logits  # We return the output of the model
 
-    def generate(self, x, max_tokens, decode_text, idx_to_char):
+    def generate(self, x, max_tokens, tokenizer):
         """Generate a text of max_tokens given a prompt
+        To Do: Make the generate code cleaner and more efficient
         """
         for _ in range(max_tokens):
             # crop the context to the block size
@@ -242,15 +243,17 @@ class HourglassLM(torch.nn.Module):
             # (B, T, vocab_size), we output the logits
             logits = self.forward(context)
             logit = logits[:, -1]  # (B, vocab_size), logit of the last token
+            # We don't want to generate <UNK> token
+            logit[:, tokenizer.char_to_idx['<UNK>']] = -float('inf')
             probs = torch.nn.functional.softmax(logit, dim=-1)
             # (B, 1), we sample the next token
-            next_token = torch.multinomial(probs, num_samples=1)
+            next_token_id = torch.multinomial(probs, num_samples=1)
+            predicted_token = tokenizer.decode_text([next_token_id.item()])
 
-            # We print the predicted token
-            token_id = next_token.item()
-            print(decode_text([token_id], idx_to_char), end='', flush=True)
+            # If we reach the end of the sequence
+            if predicted_token == '<EOS>':
+                break
+            print(predicted_token, end='', flush=True)
 
             # (B, T+1), we add the new token to the context
-            x = torch.cat((x, next_token), dim=1)
-
-        return x
+            x = torch.cat((x, next_token_id), dim=1)

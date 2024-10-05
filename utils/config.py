@@ -13,7 +13,7 @@ def get_parser():
         "--factors",
         nargs='+',
         type=int,
-        default=[2, 1, 8, 3],
+        default=[6, 1],
         help="""
         List of Tuples defining the number of layers and the shortening factor for each block ofs the model. Example: 2 1 4 4
         """
@@ -36,7 +36,7 @@ def get_parser():
     parser.add_argument(
         "--n_heads",
         type=int,
-        default=8,
+        default=6,
         help="Number of attention heads."
     )
 
@@ -50,7 +50,7 @@ def get_parser():
     parser.add_argument(
         "--dropout",
         type=float,
-        default=0.15,
+        default=0.2,
         help="Dropout rate."
     )
 
@@ -60,6 +60,20 @@ def get_parser():
         type=int,
         default=10,
         help="Number of epochs for training."
+    )
+
+    parser.add_argument(
+        "--iter",
+        type=int,
+        default=1000,
+        help="Number of batches per epoch."
+    )
+
+    parser.add_argument(
+        "--eval_iter",
+        type=int,
+        default=200,
+        help="Number of batches per validation."
     )
 
     parser.add_argument(
@@ -84,10 +98,17 @@ def get_parser():
         help="Epsilon parameter for Adam optimizer."
     )
 
+    parser.add_argument(
+        "--train_val_split",
+        type=float,
+        default=0.90,
+        help="Ratio of training and validation data."
+    )
+
     # Other configurations
     parser.add_argument(
         "--device",
-        type=str.lower,
+        type=str,
         default="cuda" if torch.cuda.is_available() else "cpu",
         help="Device to use for training (cuda/cpu)."
     )
@@ -95,22 +116,22 @@ def get_parser():
     parser.add_argument(
         "--data_path",
         type=str,
-        default='dataset/lovecraft-stories.txt',
+        default='datasets/books_corpus.txt',
         help="Path to the data file."
     )
 
     parser.add_argument(
         "--model_save_path",
         type=str,
-        default='trained_models/hourglass-model.pth',
+        default='trained_models/hourglass-pretrained',
         help="Path to save the model."
     )
 
     parser.add_argument(
-        "--train_val_split",
-        type=float,
-        default=0.95,
-        help="Ratio of training and validation data."
+        "--vocab_path",
+        type=str,
+        default='vocab.json',
+        help="Path to save the vocabulary."
     )
 
     # Inference settings
@@ -126,8 +147,15 @@ def get_parser():
     parser.add_argument(
         "--max_tokens",
         type=int,
-        default=200,
+        default=250,
         help="Maximum number of tokens to generate."
+    )
+
+    parser.add_argument(
+        "--load_model_path",
+        type=str,
+        default='trained_models/hourglass-finetuned.pth',
+        help="Load a trained model for inference."
     )
 
     return parser

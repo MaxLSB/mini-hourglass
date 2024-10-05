@@ -1,7 +1,5 @@
 import os
 
-# Idea: getting rid of the empty lines in the dataset?
-
 # Using the lovecraft stories dataset
 dataset_path = 'dataset'
 text = ''
@@ -14,6 +12,6 @@ for file in os.listdir(dataset_path):
         print('Done')
 
 # Combining and saving the stories in a single file
-dataset_combined = 'lovecraft-stories.txt'
+dataset_combined = 'datasets/lovecraft-stories.txt'
 with open(dataset_combined, 'w', encoding='utf-8') as f:
     f.write(text)
