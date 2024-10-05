@@ -164,7 +164,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Finetuning a pre-trained model")
     parser.add_argument("--load_model_path", type=str,
-                        default='trained_models/hourglass-pretrained-9', help="Path to pre-trained model")
+                        default='trained_models/hourglass-pretrained-9.pth', help="Path to pre-trained model")
     parser.add_argument("--data_path", type=str,
                         default='datasets/haiku-dataset.txt', help="Path to haiku dataset file")
     parser.add_argument("--model_save_path", type=str,
