@@ -32,7 +32,7 @@ Pre-trained
 the rest of the women ever struck his lips , and already he was initiate of it .
 he shook his head and typed away from the corner so he turned quickly , tucking down the lanes as he returned to the jar
 ```
-Fine-tuned to generate haikus
+Fine-tuned to generate haikus (the model generates only 3 lines and stops by itself with a EOS token)
 ```
 an get over pay yourself
 so much love to help mething is dangerous
