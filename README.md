@@ -13,10 +13,10 @@ The [paper](https://arxiv.org/abs/2110.13711) of reference.
 You can train the model yourself if you have a GPU.
 
 *Disclaimer*
-- The code can definitly be more efficient and improved.
 - No pre-made tokenizer.
 - No already pretrained model.
 - No transformers library.
+- Obviously the code can be more efficient and improved.
 
 Various datasets i used and tested:
 - [Kaggle's Haiku Dataset](https://www.kaggle.com/datasets/hjhalani30/haiku-dataset)
