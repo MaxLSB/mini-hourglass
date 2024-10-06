@@ -46,7 +46,7 @@ warming dances aren't necessary
 ## Install
 
 ```
-git clone https://github.com/MaxLSB/Hourglass-Hierarchical-Transformer-Language-Model.git
+git clone https://github.com/MaxLSB/hourglass-hierarchical-transformer.git
 ```
 ```
 pip install -r requirements.txt
