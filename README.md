@@ -15,8 +15,8 @@ The [paper](https://arxiv.org/abs/2110.13711) of reference.
 
 This project is partially inspired by Karpathy's GPT implementation from scratch.
 
-* ! Disclaimer !*
-- No pre-made tokenizer.
+ *Disclaimer*
+- No pre-made tokenize.
 - No already pretrained model.
 - No transformers library.
 - Obviously the code can be more efficient and improved.
