@@ -4,17 +4,18 @@ _Still working on it..._
 
 ## Introduction
 
-Implemented the Hourglass Language Model from scratch, which is a Hierarchical Transformer Language Model. This auto-regressive transformer uses a U-Net-like structure, which enables it to handle longer sequences more effectively. 
+Small implementation of the Hourglass from scratch. Hourglass is a Hierarchical Transformer Language Model. This auto-regressive transformer uses a U-Net-like structure, which enables it to handle longer sequences more effectively. 
 
-My model works at a **character-level** (easier to train compared to words/sub-words). I built the entire pipeline: pre-training, fine-tuning, and inference processes. 
+My model works at a **character-level** (easier to train compared to words/sub-words). I built: pre-training, fine-tuning, and inference processes. 
 
 The goal of this project was to gain a detailed understanding of the functioning of autoregressive transformer models through a hands-on approach and an implementation of a very interesting paper.
+You can train the model yourself if you have a GPU.
 
 The [paper](https://arxiv.org/abs/2110.13711) of reference. 
 
-You can train the model yourself if you have a GPU.
+This project is partially inspired by Karpathy's GPT implementation from scratch.
 
-*Disclaimer*
+* ! Disclaimer !*
 - No pre-made tokenizer.
 - No already pretrained model.
 - No transformers library.
