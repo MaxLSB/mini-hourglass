@@ -28,7 +28,7 @@ Various datasets i used and tested:
 
 ## Quick Example
 
-Example of results achieved after approximately 2 hours of pre-training and fine-tuning.
+Example of results achieved after approximately 2 hours of pre-training and fine-tuning of a ~20M parameters hourglass model.
 
 Pre-trained
 ```
