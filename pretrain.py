@@ -33,7 +33,7 @@ class RandomSampleTextDataset(Dataset):
             0, len(self.data) - self.block_size - 1)  # Random start index
         x = self.data[start_idx:start_idx + self.block_size]
         y = self.data[start_idx + 1:start_idx + self.block_size + 1]
-        # y = x[1:] + [self.tokenizer['<EOS>'] # Need to test this.
+        # Not adding EOS or BOS tokens in pretraining since i don't always start(end) at the beginning(end) of a sentence. So it would be misleading for the model.
         return torch.tensor(x, dtype=torch.long), torch.tensor(y, dtype=torch.long)
 
 
@@ -52,7 +52,7 @@ def train_val_split(data: torch.Tensor, split_ratio: float) -> Tuple[torch.Tenso
     return data[:n], data[n:]
 
 
-# Initialize weights using Xavier initialization
+# (Maybe add Xavier initialization instead ?)
 def init_weights(module):
     if isinstance(module, torch.nn.Linear):
         torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
@@ -150,7 +150,7 @@ def main():
 
             total_loss += loss.item()
 
-        train_loss = total_loss / len(train_loader)
+        train_loss = total_loss / len(train_loader) # Average Loss per batch
 
         # Validation
         model.eval()
@@ -162,7 +162,7 @@ def main():
                 y_pred = model(x)
                 total_loss += loss_fn(y_pred.view(-1,
                                       model.vocab_size), y.view(-1)).item()
-        val_loss = total_loss / len(val_loader)
+        val_loss = total_loss / len(val_loader) # Average Loss per batch
 
         # Print the losses
         print(f'Epoch: {epoch+1}/{args.epochs}, Training Loss: {

@@ -58,6 +58,7 @@ def main():
     model.eval()
 
     # Generate using the prompt as context
+    # NOT WORKING (Need to work on it...)
     if args.gen_mode == 'prompt':
         prompt = input("Enter a prompt: ")
         prompt = torch.tensor(
@@ -68,7 +69,7 @@ def main():
 
     # Generate from scratch
     elif args.gen_mode == 'scratch':
-        context = torch.zeros((1, 1), dtype=torch.long, device=args.device)
+        context = torch.tensor([[tokenizer.bos]], dtype=torch.long, device=args.device)
         print('\nGenerating text: \n')
         model.generate(context, max_tokens=args.max_tokens,
                        tokenizer=tokenizer)

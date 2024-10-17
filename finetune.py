@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 from model import HourglassLM
@@ -40,14 +40,13 @@ class HaikuDataset(Dataset):
         haiku = self.haikus[idx]
         encoded = self.tokenizer.encode_text(haiku)
         # Add EOS token at the end
-        encoded = encoded + [0]
+        encoded = encoded + [self.tokenizer.eos]
 
-        if len(encoded) > self.block_size:
-            encoded = encoded[:self.block_size]
+        # Pad with EOS tokens or crop the sequence & adding the BOS token at the beginning
+        if len(encoded) > self.block_size - 1:
+            encoded = self.tokenizer.bos + encoded[:self.block_size - 1]
         else:
-            # Pad the sequence with EOS tokens
-            encoded = encoded + \
-                [0] * (self.block_size - len(encoded))
+            encoded = self.tokenizer.bos + encoded + self.tokenizer.eos * (self.block_size - 1 - len(encoded))
         x = encoded[:-1]
         y = encoded[1:]
 
@@ -62,19 +61,6 @@ class HaikuDataset(Dataset):
 def load_data(file_path: Path) -> List[str]:
     with open(file_path, 'r', encoding='utf-8') as f:
         return f.read()
-
-
-def init_tokenizer(text: List[str]) -> Tuple[List[str], dict, dict]:
-    # Get all unique characters (like a Tokenizer)
-    chars = sorted(list(set(text)))
-    # Add special tokens at position 0, 1 and 2
-    special_tokens = ['<EOS>', '<UNK>']
-    chars = special_tokens + chars
-    # Create a dictionary mapping characters to indices
-    char_to_idx = {ch: i for i, ch in enumerate(chars)}
-    # Create a dictionary mapping indices to characters
-    idx_to_char = {i: ch for i, ch in enumerate(chars)}
-    return chars, char_to_idx, idx_to_char
 
 
 def load_model(filepath, device):
@@ -161,6 +147,8 @@ def main(args):
 
 
 if __name__ == "__main__":
+    
+    # Need to make the parser cleaner, in another file
     parser = argparse.ArgumentParser(
         description="Finetuning a pre-trained model")
     parser.add_argument("--load_model_path", type=str,
