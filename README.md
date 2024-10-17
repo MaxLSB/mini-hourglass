@@ -102,8 +102,7 @@ To perform inference with your trained model, use the ```inference.py``` file wi
 | `--vocab_path` | str | 'vocab.json' | Path to the vocabulary file. |
 
 ## To Do
-- Add BOS Tokens
 - Cleaning some parts of the code
-- Xavier Init
+- Xavier Init ?
 - Proper Argparsing for the ```finetune.py``` file
 - Try to pre-train and fine-tune the model for a longer period
