@@ -26,6 +26,11 @@ Various datasets i used and tested:
 - [Lovecraft Books](https://data.world/mattgawarecki/hp-lovecraft)
 - Book Corpus (only a very small part)
 
+## Hourglass Architecture
+
+![Hourglass High level architecture overview](assets/hourglass.png)
+
+
 ## Quick Example
 
 Example of results achieved after approximately 2 hours of pre-training and fine-tuning of a ~20M parameters hourglass model.
